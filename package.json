@@ -1,0 +1,20 @@
+{
+  "name": "@morglod/events-hub",
+  "version": "0.1.0",
+  "description": "typed event hub",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "keywords": [
+    "events",
+    "hub",
+    "typed"
+  ],
+  "author": "morglod",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^3.0.1"
+  }
+}
