@@ -3,7 +3,7 @@
 ## Install
 
 ```
-npm i @morglod/events-hub
+npm i https://github.com/Morglod/events-hub.git
 ```
 
 ## Example

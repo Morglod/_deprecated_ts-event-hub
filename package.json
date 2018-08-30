@@ -16,5 +16,9 @@
   "license": "MIT",
   "devDependencies": {
     "typescript": "^3.0.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Morglod/events-hub.git"
   }
 }
