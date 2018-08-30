@@ -9,7 +9,13 @@ type _HandlerReturn = void|Error|typeof StopEventPropogation;
  */
 export type HandlerReturn = _HandlerReturn | Promise<_HandlerReturn>;
 
-export type Event<EventType extends string, EventData = any> = {
+export type HandlerFunc<EventTypesData_, EventType extends keyof EventTypesData_> = (event: Event<EventTypesData_, EventType>) => HandlerReturn;
+
+export type Event<
+    EventTypesData_,
+    EventType extends keyof EventTypesData_,
+    EventData = EventTypesData_[EventType]
+> = {
     type: EventType,
     payload: EventData,
 };
@@ -17,47 +23,36 @@ export type Event<EventType extends string, EventData = any> = {
 /** { eventType -> eventData } */
 export type EventTypesData = { [eventType: string]: any };
 
-export abstract class EventHandler<
+export interface EventHandler<
     EventTypesData_,
     EventType extends keyof EventTypesData_,
-    EventData = EventTypesData_[EventType]
 > {
-    abstract handle(payload: EventData): HandlerReturn;
-    readonly type: EventType;
-
-    constructor(type: EventType) {
-        this.type = type;
-    }
+    handleEvent: HandlerFunc<EventTypesData_, EventType>;
+    readonly handleEventTypes?: EventType[];
 }
 
-export type HandlersPool<
-    EventTypesData_ extends { [eventType: string]: any },
-> = EventHandler<EventTypesData_, keyof EventTypesData_>[];
+export type HandlersPool<EventTypesData_> = EventHandler<EventTypesData_, keyof EventTypesData_>[];
 
-export class EventHub {
+export class EventHub<EventTypesData_ = EventTypesData> {
+    constructor(
+        public handlers: HandlersPool<EventTypesData_>,
+    ) {}
 
-}
-
-type ExampleEventTypes = {
-    newTasks: {
-        tasks: {
-            uuid: string,
-            name: string,
-        }[],
-    },
-    updateTasks: {
-        tasks: {
-            [uuid: string]: {
-                name?: string,
-            }
-        }
-    },
-};
-
-const exampleHub = new EventHub();
-
-class ExampleHandler {
-    handle(payload: number) {
+    handlerFailed = (error: Error, handler: EventHandler<EventTypesData_, keyof EventTypesData_>): void|(typeof StopEventPropogation) => {
         return;
-    }
+    };
+
+    emit = async (event: Event<EventTypesData_, keyof EventTypesData_>) => {
+        handlerLoop:
+        for (let i = 0; i < this.handlers.length; ++i) {
+            const handler = this.handlers[i];
+            if (handler.handleEventTypes !== undefined && !handler.handleEventTypes.includes(event.type)) {
+                continue;
+            }
+            let r = handler.handleEvent(event);
+            if (r instanceof Promise) r = await r;
+            if (r instanceof Error) r = this.handlerFailed(r, handler);
+            if (r === StopEventPropogation) break handlerLoop;
+        }
+    };
 }
