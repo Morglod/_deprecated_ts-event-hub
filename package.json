@@ -1,6 +1,6 @@
 {
-  "name": "@morglod/events-hub",
-  "version": "0.1.0",
+  "name": "@morglod/ts-event-hub",
+  "version": "0.2.0",
   "description": "typed event hub",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -8,7 +8,7 @@
     "build": "tsc"
   },
   "keywords": [
-    "events",
+    "event",
     "hub",
     "typed"
   ],
@@ -19,6 +19,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Morglod/events-hub.git"
+    "url": "https://github.com/Morglod/ts-event-hub.git"
   }
 }

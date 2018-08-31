@@ -23,26 +23,30 @@ export type Event<
 /** { eventType -> eventData } */
 export type EventTypesData = { [eventType: string]: any };
 
-export interface EventHandler<
+export abstract class EventHandler<
     EventTypesData_,
     EventType extends keyof EventTypesData_,
 > {
-    handleEvent: HandlerFunc<EventTypesData_, EventType>;
-    readonly handleEventTypes?: EventType[];
+    constructor(handleEventTypes: EventType[], handleEvent: HandlerFunc<EventTypesData_, EventType>) {
+        this.handleEventTypes = handleEventTypes;
+        this.handleEvent = handleEvent;
+    }
+    readonly handleEventTypes: EventType[];
+    readonly handleEvent: HandlerFunc<EventTypesData_, EventType>;
 }
 
-export type HandlersPool<EventTypesData_> = EventHandler<EventTypesData_, keyof EventTypesData_>[];
+export type HandlersPool<EventTypesData_, ETypes extends keyof EventTypesData_> = EventHandler<EventTypesData_, ETypes>[];
 
-export class EventHub<EventTypesData_ = EventTypesData> {
+export class EventHub<EventTypesData_ = EventTypesData, ETypes extends keyof EventTypesData_ = keyof EventTypesData_> {
     constructor(
-        public handlers: HandlersPool<EventTypesData_>,
+        public handlers: HandlersPool<EventTypesData_, any>,
     ) {}
 
-    handlerFailed = (error: Error, handler: EventHandler<EventTypesData_, keyof EventTypesData_>): void|(typeof StopEventPropogation) => {
+    handlerFailed = (error: Error, handler: EventHandler<EventTypesData_, ETypes>): void|(typeof StopEventPropogation) => {
         return;
     };
 
-    emit = async (event: Event<EventTypesData_, keyof EventTypesData_>) => {
+    emit = async (event: Event<EventTypesData_, ETypes>) => {
         handlerLoop:
         for (let i = 0; i < this.handlers.length; ++i) {
             const handler = this.handlers[i];

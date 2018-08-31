@@ -1,16 +1,5 @@
-# ts-event-hub
+import { HandlerFunc, EventHub, EventHandler } from ".";
 
-OOP oriented, fully typed, event hub
-
-## Install
-
-```
-npm i https://github.com/Morglod/ts-event-hub.git
-```
-
-## Example
-
-```ts
 type ExampleEventTypes = {
     newTasks: {
         tasks: {
@@ -45,4 +34,3 @@ exampleHub.emit({
     type: 'newTasks',
     payload: { tasks: [] },
 });
-```
